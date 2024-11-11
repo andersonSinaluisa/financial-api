@@ -55,4 +55,24 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     public void deleteById(long id) {
         transactionPgRepository.deleteById(id);
     }
+
+    @Override
+    public List<Transaction> getByMonthAndYear(int month, int year) {
+
+        List<Transaction> transactions = transactionPgRepository
+                .findByTransactionDateYearAndTransactionDateMonth(year,month)
+                .stream()
+                .map(TransactionMapper::fromDomainToDto).toList();
+        return transactions;
+    }
+
+    @Override
+    public List<Transaction> getByAccountAndMonthAndYear(int month, int year,Long account_id) {
+
+        List<Transaction> transactions = transactionPgRepository
+                .findByTransactionDateYearAndTransactionDateMonthAndSourceAccount_Id(year,month,account_id)
+                .stream()
+                .map(TransactionMapper::fromDomainToDto).toList();
+        return List.of();
+    }
 }

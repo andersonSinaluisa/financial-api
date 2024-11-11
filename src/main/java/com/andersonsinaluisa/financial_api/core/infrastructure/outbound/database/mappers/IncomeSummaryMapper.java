@@ -12,6 +12,8 @@ public class IncomeSummaryMapper {
                 .category(data.category)
                 .report_date(data.report_date)
                 .created_at(data.created_at)
+                .end_date(data.end_date)
+                .start_date(data.start_date)
                 .build();
     }
 
@@ -22,6 +24,8 @@ public class IncomeSummaryMapper {
                 .category(data.category)
                 .total_income(data.total_income)
                 .id(data.id)
+                .end_date(data.end_date)
+                .start_date(data.start_date)
                 .build();
     }
 }

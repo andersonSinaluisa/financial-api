@@ -1,31 +1,30 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @Entity
-@Table(name="expense_sumary")
+@Table(name="assets_movement")
 @Builder
 @Getter
-public class ExpenseSummaryEntity {
-
+public class AssetsMovementEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String category;
+    @ManyToOne
+    @JoinColumn(name="asset")
+    public AssetsLiabilitiesEntity asset;
 
-    public double total_expense;
 
-    public LocalDateTime report_date;
+    public LocalDateTime movement_date;
+
+    public String description;
+
+    public double amount;
 
     public LocalDateTime created_at;
-    public LocalDate start_date;
 
-    public LocalDate end_date;
 }

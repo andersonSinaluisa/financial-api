@@ -12,4 +12,11 @@ public interface TransactionRepository {
     Optional<Transaction> getById(long id);
     List<Transaction> all();
     void deleteById(long ig);
+
+    List<Transaction> getByMonthAndYear(int month, int year);
+
+    List<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id);
+
+
+
 }

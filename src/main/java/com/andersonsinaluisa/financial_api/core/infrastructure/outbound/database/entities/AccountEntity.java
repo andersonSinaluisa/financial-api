@@ -38,13 +38,25 @@ public class AccountEntity {
 
     )
 
-    public List<TransactionEntity> destination_account;
+    public List<TransactionEntity> destination_transaction;
 
     @OneToMany(
             cascade = CascadeType.ALL,
             mappedBy = "source_account"
     )
 
-    public List<TransactionEntity> source_account;
+    public List<TransactionEntity> source_transaction;
 
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "account"
+    )
+    public List<InvoiceEntity> invoices;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "account"
+    )
+    public List<AssetsLiabilitiesEntity> assetsLiabilities;
 }

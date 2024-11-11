@@ -22,4 +22,12 @@ public class TransactionFindUseCase {
     public List<Transaction> all(){
         return repository.all();
     }
+
+    public List<Transaction> getByMonthAndYear(int month,int year){
+        return repository.getByMonthAndYear(month,year);
+    }
+
+    public List<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id){
+        return repository.getByAccountAndMonthAndYear(month,year,account_id);
+    }
 }

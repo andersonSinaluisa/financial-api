@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,5 +24,9 @@ public class IncomeSumaryEntity {
     public LocalDateTime report_date;
 
     public LocalDateTime created_at;
+
+    public LocalDate start_date;
+
+    public LocalDate end_date;
 
 }
