@@ -14,10 +14,10 @@ public class TransactionMapper {
                 .currency(data.currency)
                 .description(data.description)
                 .created_at(data.created_at)
-                .source_account(data.source_account.id)
+                .source_account(data.source_account==null?0:data.source_account.id)
                 .transaction_date(data.transaction_date)
                 .transaction_type(data.transaction_type)
-                .destination_account(data.destination_account.id)
+                .destination_account(data.destination_account==null?0:data.destination_account.id)
                 .build();
 
     }
