@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,5 +50,10 @@ public class IncomeSumaryRepositoryImpl implements IncomeSumaryRepository {
     @Override
     public void deleteById(long id) {
         incomeSumaryPgRepository.deleteById(id);
+    }
+
+    @Override
+    public List<IncomeSumary> getByRangeDate(LocalDate start_date, LocalDate end_date) {
+        return List.of();
     }
 }

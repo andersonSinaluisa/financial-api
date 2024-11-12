@@ -29,6 +29,7 @@ public class TransactionMapper {
                 .transaction_date(data.transaction_date)
                 .transaction_type(data.transaction_type)
                 .created_at(data.created_at)
+                .amount(data.amount)
                 .source_account_id(data.source_account)
                 .destination_account_id(data.destination_account)
                 .category(data.category)

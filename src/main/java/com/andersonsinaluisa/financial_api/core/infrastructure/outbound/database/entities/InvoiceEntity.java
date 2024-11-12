@@ -3,8 +3,7 @@ package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.databas
 
 import com.andersonsinaluisa.financial_api.core.domain.model.Account;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +13,9 @@ import java.util.List;
 @Entity
 @Builder
 @Getter
+@NoArgsConstructor // This will generate the default constructor// Generates a no-argument constructor
+@AllArgsConstructor
+@Setter
 public class InvoiceEntity {
 
     @Id

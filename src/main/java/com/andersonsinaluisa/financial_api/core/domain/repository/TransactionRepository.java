@@ -3,6 +3,7 @@ package com.andersonsinaluisa.financial_api.core.domain.repository;
 import com.andersonsinaluisa.financial_api.core.domain.model.Account;
 import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,6 @@ public interface TransactionRepository {
 
     List<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id);
 
-
+    List<Transaction> getByRange(LocalDate start,LocalDate end);
 
 }

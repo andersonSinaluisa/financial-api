@@ -11,7 +11,9 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.trans
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.mappers.TransactionMappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,10 +44,18 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionDto> create(@RequestBody TransactionCreateDto data){
-        Transaction a = createUseCase.create(TransactionMappers.fromDtoToDomain(data));
+    public ResponseEntity<TransactionDto> create(@RequestBody TransactionCreateDto data) {
+
+        Transaction a = null;
+        try {
+            a = createUseCase.create(TransactionMappers.fromDtoToDomain(data));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return ResponseEntity.ok(TransactionMappers.fromDomainToDto(a));
+
+
     }
 
 

@@ -1,8 +1,7 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +10,9 @@ import java.util.List;
 @Table(name="account")
 @Builder
 @Getter
+@NoArgsConstructor // This will generate the default constructor// Generates a no-argument constructor
+@AllArgsConstructor
+@Setter
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +24,7 @@ public class AccountEntity {
 
     public String account_number;
 
-    public String initial_balance;
+    public double initial_balance;
 
     public String status;
 
@@ -59,4 +61,7 @@ public class AccountEntity {
             mappedBy = "account"
     )
     public List<AssetsLiabilitiesEntity> assetsLiabilities;
+
+
+
 }

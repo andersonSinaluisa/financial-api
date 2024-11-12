@@ -25,12 +25,8 @@ public class IncomeSumaryCreateUseCase {
         return incomeSumaryRepository.create(data).orElseThrow();
     }
 
-    public IncomeSumary createFromTransaction(
-            List<Transaction> transactions,
-            Account account,
-            LocalDate start,
-            LocalDate end
-            ){
+
+    public double calculateTotalIncome( List<Transaction> transactions){
         double total_account = 0;
         for(Transaction transaction: transactions) {
             if (transaction.transaction_type.equals(TypeTransaction.INGRESO.getValue())) {
@@ -47,6 +43,16 @@ public class IncomeSumaryCreateUseCase {
             }
 
         }
+        return total_account;
+    }
+
+    public IncomeSumary createFromTransaction(
+            List<Transaction> transactions,
+            Account account,
+            LocalDate start,
+            LocalDate end
+            ){
+        double total_account = calculateTotalIncome(transactions);
 
         IncomeSumary incomeSumary = IncomeSumary.builder()
                 .total_income(total_account)

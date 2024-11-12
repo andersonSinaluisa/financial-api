@@ -2,8 +2,7 @@ package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.databas
 
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +11,9 @@ import java.time.LocalDateTime;
 @Table(name="income_summary")
 @Builder
 @Getter
+@NoArgsConstructor // This will generate the default constructor// Generates a no-argument constructor
+@AllArgsConstructor
+@Setter
 public class IncomeSumaryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

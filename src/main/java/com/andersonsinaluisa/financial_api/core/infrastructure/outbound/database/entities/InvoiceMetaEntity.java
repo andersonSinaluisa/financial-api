@@ -2,13 +2,15 @@ package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.databas
 
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Table(name="invoice_meta")
 @Entity
 @Builder
 @Getter
+@NoArgsConstructor // This will generate the default constructor// Generates a no-argument constructor
+@AllArgsConstructor
+@Setter
 public class InvoiceMetaEntity {
 
     @Id

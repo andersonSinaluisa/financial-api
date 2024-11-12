@@ -24,4 +24,6 @@ public interface TransactionPgRepository extends JpaRepository<TransactionEntity
     @Query("SELECT t FROM TransactionEntity t WHERE YEAR(t.transaction_date) = :year AND MONTH(t.transaction_date) = :month AND t.destination_account.id = :accountId")
     List<TransactionEntity> findByTransactionDateYearAndTransactionDateMonthAndDestinationAccount_Id(
             @Param("year") int year, @Param("month") int month, @Param("accountId") Long accountId);
+    @Query("SELECT t FROM TransactionEntity t WHERE DATE(t.transaction_date) BETWEEN :startDate AND :endDate")
+    List<TransactionEntity> findByTransactionDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

@@ -15,7 +15,7 @@ public class AccountCreateDto {
 
     public String account_number;
 
-    public String initial_balance;
+    public double initial_balance;
 
     public String status;
 

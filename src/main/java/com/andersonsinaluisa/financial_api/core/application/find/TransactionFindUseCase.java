@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,5 +30,9 @@ public class TransactionFindUseCase {
 
     public List<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id){
         return repository.getByAccountAndMonthAndYear(month,year,account_id);
+    }
+
+    public  List<Transaction> getByRange(LocalDate start, LocalDate end){
+        return repository.getByRange(start,end);
     }
 }

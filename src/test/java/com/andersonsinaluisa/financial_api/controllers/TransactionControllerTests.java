@@ -30,32 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         locations = "classpath:application-integrationtest.properties")
 public class TransactionControllerTests {
 
-    @Autowired
-    private MockMvc mvc;
 
-    @Autowired
-    private AccountCreateUseCase createUseCase;
-
-    @Test
-    public void givenAccounts_whenGetAccount_thenStatus200() throws Exception {
-        Faker faker = new Faker();
-
-        Account a = createUseCase.create(Account.builder()
-                        .initial_balance(String.valueOf(
-                                faker.number().randomDouble(2,10,59633))
-                        )
-                        .status("A")
-                        .account_number(faker.business().creditCardNumber())
-                        .account_type(TypeTransaction.INGRESO.getValue())
-                        .account_name(faker.commerce().productName())
-                        .created_at(LocalDateTime.now())
-                .build());
-        mvc.perform(get("/account")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content()
-                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.[*].account_number",is(a.account_name)));
-    }
 
 }

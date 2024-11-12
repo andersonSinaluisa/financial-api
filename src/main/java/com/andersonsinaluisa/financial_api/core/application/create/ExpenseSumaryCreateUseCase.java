@@ -22,12 +22,8 @@ public class ExpenseSumaryCreateUseCase {
         return expenseSumaryRepository.create(data).orElseThrow();
     }
 
-    public ExpenseSummary createFromTransaction(
-            List<Transaction> transactions,
-            Account account,
-            LocalDate start,
-            LocalDate end
-    ){
+
+    public double calculateTotaExpense(List<Transaction> transactions){
         double total_account = 0;
         for(Transaction transaction: transactions) {
             if (transaction.transaction_type.equals(TypeTransaction.GASTO.getValue())) {
@@ -41,6 +37,15 @@ public class ExpenseSumaryCreateUseCase {
             }
 
         }
+        return total_account;
+    }
+    public ExpenseSummary createFromTransaction(
+            List<Transaction> transactions,
+            Account account,
+            LocalDate start,
+            LocalDate end
+    ){
+        double total_account =calculateTotaExpense(transactions);
         ExpenseSummary expenseSummary = ExpenseSummary.builder()
                 .category(account.account_name)
                 .total_expense(total_account)

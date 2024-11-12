@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -74,5 +75,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .stream()
                 .map(TransactionMapper::fromDomainToDto).toList();
         return List.of();
+    }
+
+    @Override
+    public List<Transaction> getByRange(LocalDate start, LocalDate end) {
+
+        List<Transaction> list = transactionPgRepository.findByTransactionDateBetween(start,end)
+                .stream()
+                .map(TransactionMapper::fromDomainToDto)
+                .toList();
+        return list;
     }
 }
