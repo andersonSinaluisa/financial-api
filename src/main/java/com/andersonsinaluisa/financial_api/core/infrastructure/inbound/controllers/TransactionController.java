@@ -11,6 +11,10 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.trans
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.mappers.TransactionMappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
@@ -37,21 +41,24 @@ public class TransactionController {
 
 
     @GetMapping
-    public ResponseEntity<List<TransactionDto>> all(){
-
-       List<TransactionDto> d= transactionFindUseCase.all().stream().map(TransactionMappers::fromDomainToDto).toList();
-       return ResponseEntity.ok(d);
+    public ResponseEntity<Page<TransactionDto>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending
+    ){
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Transaction> d =  transactionFindUseCase.all(pageable);
+        Page<TransactionDto> response = d.map(TransactionMappers::fromDomainToDto);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<TransactionDto> create(@RequestBody TransactionCreateDto data) {
+    public ResponseEntity<TransactionDto> create(@RequestBody TransactionCreateDto data) throws Exception {
 
-        Transaction a = null;
-        try {
-            a = createUseCase.create(TransactionMappers.fromDtoToDomain(data));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        Transaction a = createUseCase.create(TransactionMappers.fromDtoToDomain(data));
 
         return ResponseEntity.ok(TransactionMappers.fromDomainToDto(a));
 
@@ -69,6 +76,18 @@ public class TransactionController {
     }
 
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable("id") long id){
+        deleteUseCase.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TransactionDto> get(@PathVariable("id") long id){
+        Transaction transaction = transactionFindUseCase.getById(id);
+        return ResponseEntity.ok(TransactionMappers.fromDomainToDto(transaction));
+
+    }
 
 
 

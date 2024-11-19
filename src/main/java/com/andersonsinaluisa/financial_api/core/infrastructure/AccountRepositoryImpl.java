@@ -7,6 +7,8 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.mappers.AccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -49,9 +51,15 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    public Page<Account> all(Pageable pageable) {
+        Page<AccountEntity> objectStream = accountPgRepository.findAll(pageable);
+        return objectStream.map(AccountMapper::fromDomainToDto);
+    }
+
+    @Override
     public List<Account> all() {
-        Stream<Account> objectStream = accountPgRepository.findAll().stream().map(AccountMapper::fromDomainToDto);
-        return objectStream.toList();
+
+        return accountPgRepository.findAll().stream().map(AccountMapper::fromDomainToDto).toList();
     }
 
     @Override

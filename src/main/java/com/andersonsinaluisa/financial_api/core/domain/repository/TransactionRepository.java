@@ -2,6 +2,8 @@ package com.andersonsinaluisa.financial_api.core.domain.repository;
 
 import com.andersonsinaluisa.financial_api.core.domain.model.Account;
 import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,7 +13,7 @@ public interface TransactionRepository {
     Optional<Transaction> create(Transaction data);
     Optional<Transaction> update(Transaction data);
     Optional<Transaction> getById(long id);
-    List<Transaction> all();
+    Page<Transaction> all(Pageable pageable);
     void deleteById(long ig);
 
     List<Transaction> getByMonthAndYear(int month, int year);

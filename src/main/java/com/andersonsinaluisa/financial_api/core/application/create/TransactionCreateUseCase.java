@@ -25,7 +25,7 @@ public class TransactionCreateUseCase {
         if(avaliable.stream().noneMatch(e->e.getValue().equals(data.transaction_type))){
             throw new TypeTransactionNotAllow("Tipo de transación no valida");
         }
-
+        data.deleted = false;
         Transaction t =  this.transactionRepository.create(data).orElseThrow();
         return t;
     }

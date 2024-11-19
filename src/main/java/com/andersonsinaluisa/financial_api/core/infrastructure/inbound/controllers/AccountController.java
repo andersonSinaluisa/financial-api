@@ -8,6 +8,10 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.accou
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.account.AccountDto;
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.mappers.AccountMappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,9 +37,16 @@ public class AccountController {
     private final AccountDeleteUseCase deleteUseCase;
 
     @GetMapping
-    public ResponseEntity<List<AccountDto>> all(){
-        List<Account> list = accountFindUseCase.findAll();
-        List<AccountDto> listDto =  list.stream().map(AccountMappers::fromDomainToDto).toList();
+    public ResponseEntity<Page<AccountDto>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending
+    ){
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Account> list = accountFindUseCase.findAll(pageable);
+        Page<AccountDto> listDto =  list.map(AccountMappers::fromDomainToDto);
         return ResponseEntity.ok(listDto);
     }
 

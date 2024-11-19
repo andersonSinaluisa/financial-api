@@ -8,6 +8,8 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.mappers.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
@@ -47,14 +49,21 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public List<Transaction> all() {
-        Stream<Transaction> stream = transactionPgRepository.findAll().stream().map(TransactionMapper::fromDomainToDto);
-        return stream.toList();
+    public Page<Transaction> all(Pageable pageable) {
+        Page<TransactionEntity> stream = transactionPgRepository.findAll(pageable);
+        return stream.map(TransactionMapper::fromDomainToDto);
     }
 
     @Override
     public void deleteById(long id) {
-        transactionPgRepository.deleteById(id);
+        Optional<TransactionEntity> e = transactionPgRepository.findById(id);
+        if(e.isPresent()){
+            TransactionEntity obj = e.get();
+            obj.deleted = true;
+            transactionPgRepository.save(obj);
+            transactionPgRepository.deleteById(id);
+        }
+
     }
 
     @Override

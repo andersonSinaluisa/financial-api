@@ -5,6 +5,8 @@ import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
 import com.andersonsinaluisa.financial_api.core.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,8 +22,8 @@ public class TransactionFindUseCase {
         return  repository.getById(id).orElseThrow();
     }
 
-    public List<Transaction> all(){
-        return repository.all();
+    public Page<Transaction> all(Pageable pageable){
+        return repository.all(pageable);
     }
 
     public List<Transaction> getByMonthAndYear(int month,int year){

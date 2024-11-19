@@ -44,4 +44,6 @@ public class TransactionEntity {
     public String transaction_type;
 
     public LocalDateTime created_at;
+
+    public boolean deleted;
 }

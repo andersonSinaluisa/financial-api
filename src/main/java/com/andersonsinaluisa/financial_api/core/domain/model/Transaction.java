@@ -28,4 +28,6 @@ public class Transaction {
     public String transaction_type;
 
     public LocalDateTime created_at;
+
+    public boolean deleted;
 }
