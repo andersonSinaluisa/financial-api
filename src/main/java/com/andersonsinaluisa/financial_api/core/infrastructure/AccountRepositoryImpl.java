@@ -58,7 +58,6 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public List<Account> all() {
-
         return accountPgRepository.findAll().stream().map(AccountMapper::fromDomainToDto).toList();
     }
 
