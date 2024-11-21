@@ -32,7 +32,7 @@ public class SumaryIncomeAndExpenseJob {
 
     @Autowired
     private final ExpenseSumaryCreateUseCase expenseSumaryCreateUseCase;
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "20 * * * * *")
     public void execute() {
         LocalDateTime now = LocalDateTime.now();
         LocalDate StartDate = LocalDate.now();

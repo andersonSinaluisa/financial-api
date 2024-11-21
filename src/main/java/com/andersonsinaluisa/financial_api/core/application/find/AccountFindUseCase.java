@@ -16,9 +16,7 @@ public class AccountFindUseCase {
     @Autowired
     private  AccountRepository accountRepository = null;
 
-    public Page<Account> findAll(Pageable pageable){
-        return this.accountRepository.all(pageable);
-    }
+
     public List<Account> findAll(){
         return this.accountRepository.all();
     }
@@ -27,4 +25,10 @@ public class AccountFindUseCase {
     }
 
 
+    public Page<Account> findAll(Pageable pageable, String search){
+        if(search==null || search.isBlank()){
+            return this.accountRepository.all(pageable);
+        }
+        return this.accountRepository.all(search,pageable);
+    }
 }

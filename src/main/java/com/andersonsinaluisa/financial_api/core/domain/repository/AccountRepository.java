@@ -13,6 +13,9 @@ public interface AccountRepository {
     Optional<Account> update(Account data);
     Optional<Account> getById(long id);
     Page<Account> all(Pageable pageable);
+    Page<Account> all(String search, Pageable pageable);
     List<Account> all();
     void deleteById(long ig);
+
+
 }

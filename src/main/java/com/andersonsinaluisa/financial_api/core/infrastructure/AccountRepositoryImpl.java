@@ -52,7 +52,14 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public Page<Account> all(Pageable pageable) {
+
         Page<AccountEntity> objectStream = accountPgRepository.findAll(pageable);
+        return objectStream.map(AccountMapper::fromDomainToDto);
+    }
+
+    @Override
+    public Page<Account> all(String search,Pageable pageable){
+        Page<AccountEntity> objectStream = accountPgRepository.findBySearch(search,pageable);
         return objectStream.map(AccountMapper::fromDomainToDto);
     }
 
@@ -71,4 +78,6 @@ public class AccountRepositoryImpl implements AccountRepository {
             accountPgRepository.save(data);
         }
     }
+
+
 }

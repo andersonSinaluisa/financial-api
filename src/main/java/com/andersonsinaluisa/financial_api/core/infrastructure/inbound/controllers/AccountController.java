@@ -41,14 +41,17 @@ public class AccountController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "true") boolean ascending
+            @RequestParam(defaultValue = "true") boolean ascending,
+            @RequestParam(defaultValue = "") String search
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Account> list = accountFindUseCase.findAll(pageable);
+        Page<Account> list = accountFindUseCase.findAll(pageable,search);
         Page<AccountDto> listDto =  list.map(AccountMappers::fromDomainToDto);
         return ResponseEntity.ok(listDto);
     }
+
+
 
 
     @PostMapping
