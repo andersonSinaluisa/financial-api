@@ -95,4 +95,12 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .toList();
         return list;
     }
+
+    @Override
+    public Page<Transaction> getByRange(LocalDate start, LocalDate end, Pageable pageable) {
+        Page<TransactionEntity> page = transactionPgRepository.findByTransactionDateBetween(
+                start, end, pageable
+        );
+        return page.map(TransactionMapper::fromDomainToDto);
+    }
 }

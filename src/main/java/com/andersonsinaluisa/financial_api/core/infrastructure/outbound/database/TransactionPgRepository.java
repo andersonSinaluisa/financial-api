@@ -1,6 +1,8 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database;
 
 import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities.TransactionEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +26,11 @@ public interface TransactionPgRepository extends JpaRepository<TransactionEntity
     @Query("SELECT t FROM TransactionEntity t WHERE YEAR(t.transaction_date) = :year AND MONTH(t.transaction_date) = :month AND t.destination_account.id = :accountId")
     List<TransactionEntity> findByTransactionDateYearAndTransactionDateMonthAndDestinationAccount_Id(
             @Param("year") int year, @Param("month") int month, @Param("accountId") Long accountId);
+
+
     @Query("SELECT t FROM TransactionEntity t WHERE DATE(t.transaction_date) BETWEEN :startDate AND :endDate")
     List<TransactionEntity> findByTransactionDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT t FROM TransactionEntity t WHERE DATE(t.transaction_date) BETWEEN :startDate AND :endDate")
+    Page<TransactionEntity> findByTransactionDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 }

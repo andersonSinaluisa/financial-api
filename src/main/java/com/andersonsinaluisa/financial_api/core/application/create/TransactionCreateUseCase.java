@@ -26,6 +26,7 @@ public class TransactionCreateUseCase {
             throw new TypeTransactionNotAllow("Tipo de transación no valida");
         }
         data.deleted = false;
+        data.created_at = LocalDateTime.now();
         Transaction t =  this.transactionRepository.create(data).orElseThrow();
         return t;
     }

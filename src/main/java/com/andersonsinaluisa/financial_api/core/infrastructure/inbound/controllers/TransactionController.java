@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -45,11 +46,13 @@ public class TransactionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "true") boolean ascending
+            @RequestParam(defaultValue = "true") boolean ascending,
+            @RequestParam(defaultValue = "")LocalDate start_date,
+            @RequestParam(defaultValue = "") LocalDate end_date
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Transaction> d =  transactionFindUseCase.all(pageable);
+        Page<Transaction> d =  transactionFindUseCase.all(pageable,start_date,end_date);
         Page<TransactionDto> response = d.map(TransactionMappers::fromDomainToDto);
         return ResponseEntity.ok(response);
     }

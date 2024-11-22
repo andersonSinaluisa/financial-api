@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -22,8 +23,19 @@ public class TransactionFindUseCase {
         return  repository.getById(id).orElseThrow();
     }
 
-    public Page<Transaction> all(Pageable pageable){
-        return repository.all(pageable);
+    public Page<Transaction> all(Pageable pageable, LocalDate start, LocalDate end){
+
+        Calendar calendar = Calendar.getInstance();
+
+        int last_day_of_month = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        if(start==null){
+            start = LocalDate.of(LocalDate.now().getYear(),LocalDate.now().getMonth(),1);
+        }
+        if(end==null){
+            end = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), last_day_of_month);
+        }
+        return repository.getByRange(start,end,pageable);
     }
 
     public List<Transaction> getByMonthAndYear(int month,int year){

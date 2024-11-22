@@ -22,4 +22,7 @@ public interface TransactionRepository {
 
     List<Transaction> getByRange(LocalDate start,LocalDate end);
 
+
+    Page<Transaction> getByRange(LocalDate start, LocalDate end, Pageable pageable);
+
 }
