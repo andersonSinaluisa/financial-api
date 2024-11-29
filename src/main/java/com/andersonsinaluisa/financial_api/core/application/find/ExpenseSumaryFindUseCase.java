@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,5 +22,9 @@ public class ExpenseSumaryFindUseCase {
 
     public ExpenseSummary getById(long id){
         return expenseSumaryRepository.getById(id).orElseThrow();
+    }
+
+    public Optional<ExpenseSummary> getCurrent(){
+        return expenseSumaryRepository.getLast();
     }
 }

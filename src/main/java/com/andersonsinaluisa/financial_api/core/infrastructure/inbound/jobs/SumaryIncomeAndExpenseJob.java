@@ -32,24 +32,5 @@ public class SumaryIncomeAndExpenseJob {
 
     @Autowired
     private final ExpenseSumaryCreateUseCase expenseSumaryCreateUseCase;
-    @Scheduled(cron = "20 * * * * *")
-    public void execute() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate StartDate = LocalDate.now();
 
-        List<Account> accounts = accountFindUseCase.findAll();
-
-        for (Account _account : accounts) {
-            List<Transaction> transactionAccount = transactionFindUseCase
-                    .getByAccountAndMonthAndYear(
-                            now.getMonthValue(), now.getYear(), _account.id
-                    );
-            incomeSumaryCreateUseCase.createFromTransaction(transactionAccount,_account,
-                    StartDate,
-                    now.toLocalDate());
-            expenseSumaryCreateUseCase.createFromTransaction(transactionAccount,_account,StartDate,now.toLocalDate());
-
-        }
-
-    }
 }

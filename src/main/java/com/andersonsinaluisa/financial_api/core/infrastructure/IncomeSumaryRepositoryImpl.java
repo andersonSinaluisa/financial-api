@@ -37,8 +37,7 @@ public class IncomeSumaryRepositoryImpl implements IncomeSumaryRepository {
 
     @Override
     public Optional<IncomeSumary> getById(long id) {
-        Optional<IncomeSumaryEntity> e = incomeSumaryPgRepository.findById(id);
-        return Optional.of(e.map(IncomeSummaryMapper::fromEntityToDomain).get());
+        return incomeSumaryPgRepository.findById(id).map(IncomeSummaryMapper::fromEntityToDomain);
     }
 
     @Override
@@ -55,5 +54,11 @@ public class IncomeSumaryRepositoryImpl implements IncomeSumaryRepository {
     @Override
     public List<IncomeSumary> getByRangeDate(LocalDate start_date, LocalDate end_date) {
         return List.of();
+    }
+
+    @Override
+    public Optional<IncomeSumary> getLast() {
+        return incomeSumaryPgRepository.getLast()
+                .map(IncomeSummaryMapper::fromEntityToDomain);
     }
 }

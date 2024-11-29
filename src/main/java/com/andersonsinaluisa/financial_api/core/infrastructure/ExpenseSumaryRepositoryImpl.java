@@ -42,7 +42,7 @@ public class ExpenseSumaryRepositoryImpl implements ExpenseSumaryRepository {
 
     @Override
     public List<ExpenseSummary> all() {
-       List<ExpenseSummary> list = expenseSumaryPgRepository.findAll().stream().map(ExpenseSummaryMapper::fromEntityToDomain).toList();
+        List<ExpenseSummary> list = expenseSumaryPgRepository.findAll().stream().map(ExpenseSummaryMapper::fromEntityToDomain).toList();
         return list;
     }
 
@@ -59,8 +59,13 @@ public class ExpenseSumaryRepositoryImpl implements ExpenseSumaryRepository {
                                                 .toList();
 
 
-
-
         return entityList;
+    }
+
+    @Override
+    public Optional<ExpenseSummary> getLast() {
+        return  expenseSumaryPgRepository.getLast()
+                .map(ExpenseSummaryMapper::fromEntityToDomain);
+
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,44 +27,32 @@ public class IncomeSumaryCreateUseCase {
     }
 
 
-    public double calculateTotalIncome( List<Transaction> transactions){
-        double total_account = 0;
-        for(Transaction transaction: transactions) {
-            if (transaction.transaction_type.equals(TypeTransaction.INGRESO.getValue())) {
-                total_account += transaction.amount;
-            } else if (transaction.transaction_type.equals(TypeTransaction.AJUSTE.getValue())) {
-                // Aplicar el ajuste (puede ser positivo o negativo)
-                total_account += transaction.amount;
-            } else if (transaction.transaction_type.equals(TypeTransaction.DEPOSITO.getValue())) {
-                // Suma el depósito a la cuenta
-                total_account += transaction.amount;
-            } else if (transaction.transaction_type.equals(TypeTransaction.REEMBOLSO.getValue())) {
-                // Suma el reembolso (devolución de dinero)
-                total_account += transaction.amount;
-            }
+    public double calculateTotalIncome( Transaction transactions){
 
+        Optional<IncomeSumary> incomeSumaryOptional = incomeSumaryRepository.getLast();
+        double total_account = 0;
+
+        if(incomeSumaryOptional.isPresent()){
+            IncomeSumary incomeSumary = incomeSumaryOptional.get();
+            total_account = incomeSumary.total_income;
+
+        }
+        if (transactions.transaction_type.equals(TypeTransaction.INGRESO.getValue())) {
+            total_account += transactions.amount;
+        } else if (transactions.transaction_type.equals(TypeTransaction.AJUSTE.getValue())) {
+            // Aplicar el ajuste (puede ser positivo o negativo)
+            total_account += transactions.amount;
+        } else if (transactions.transaction_type.equals(TypeTransaction.DEPOSITO.getValue())) {
+            // Suma el depósito a la cuenta
+            total_account += transactions.amount;
+        } else if (transactions.transaction_type.equals(TypeTransaction.REEMBOLSO.getValue())) {
+            // Suma el reembolso (devolución de dinero)
+            total_account += transactions.amount;
         }
         return total_account;
     }
 
-    public IncomeSumary createFromTransaction(
-            List<Transaction> transactions,
-            Account account,
-            LocalDate start,
-            LocalDate end
-            ){
-        double total_account = calculateTotalIncome(transactions);
 
-        IncomeSumary incomeSumary = IncomeSumary.builder()
-                .total_income(total_account)
-                .created_at(LocalDateTime.now())
-                .start_date(start)
-                .end_date(end)
-                .category(account.account_name)
-                .report_date(LocalDateTime.now()).build();
-
-        return incomeSumaryRepository.create(incomeSumary).orElseThrow();
-    }
 
 
 

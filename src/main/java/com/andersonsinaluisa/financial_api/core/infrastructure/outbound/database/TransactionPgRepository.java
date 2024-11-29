@@ -31,6 +31,6 @@ public interface TransactionPgRepository extends JpaRepository<TransactionEntity
     @Query("SELECT t FROM TransactionEntity t WHERE DATE(t.transaction_date) BETWEEN :startDate AND :endDate")
     List<TransactionEntity> findByTransactionDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT t FROM TransactionEntity t WHERE DATE(t.transaction_date) BETWEEN :startDate AND :endDate")
+    @Query("SELECT t FROM TransactionEntity t WHERE DATE(t.transaction_date) BETWEEN :startDate AND :endDate Order By t.transaction_date desc")
     Page<TransactionEntity> findByTransactionDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 }

@@ -26,6 +26,8 @@ public class AccountEntity {
 
     public double initial_balance;
 
+    public double current_balance;
+
     public String status;
 
     public LocalDateTime created_at;

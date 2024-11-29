@@ -21,6 +21,8 @@ public class Account {
 
     public String status;
 
+    public double current_balance;
+
     public LocalDateTime created_at;
 
     public LocalDateTime updated_at;

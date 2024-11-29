@@ -1,7 +1,7 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.inbound.controllers;
 
 import com.andersonsinaluisa.financial_api.core.application.calculate.BalanceCalculateUseCase;
-import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.dashboard.BalanceDto;
+import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.transaction.TotalSumaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +22,10 @@ public class DashboardController {
 
 
     @GetMapping
-    public ResponseEntity<BalanceDto> get(
-            @RequestParam("start")LocalDate start,
-            @RequestParam("end") LocalDate end
-    ){
+    public ResponseEntity<TotalSumaryDto> get(){
 
-       double d = balanceCalculateUseCase.calculateCurrentBalance(start,end);
-       BalanceDto dto = BalanceDto.builder().currentBalace(d).build();
+        TotalSumaryDto d = balanceCalculateUseCase.calculateCurrentBalance();
 
-       return ResponseEntity.ok(dto);
+       return ResponseEntity.ok(d);
     }
 }

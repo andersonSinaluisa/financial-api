@@ -14,4 +14,6 @@ public interface IncomeSumaryRepository {
     void deleteById(long ig);
     List<IncomeSumary> getByRangeDate(LocalDate start_date, LocalDate end_date);
 
+
+    Optional<IncomeSumary> getLast();
 }

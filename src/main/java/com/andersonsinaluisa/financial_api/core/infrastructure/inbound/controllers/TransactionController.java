@@ -1,11 +1,13 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.inbound.controllers;
 
 
+import com.andersonsinaluisa.financial_api.core.application.calculate.BalanceCalculateUseCase;
 import com.andersonsinaluisa.financial_api.core.application.create.TransactionCreateUseCase;
 import com.andersonsinaluisa.financial_api.core.application.delete.TransactionDeleteUseCase;
 import com.andersonsinaluisa.financial_api.core.application.find.TransactionFindUseCase;
 import com.andersonsinaluisa.financial_api.core.application.update.TransactionUpdateUseCase;
 import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
+import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.transaction.TotalSumaryDto;
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.transaction.TransactionCreateDto;
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.transaction.TransactionDto;
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.mappers.TransactionMappers;
@@ -15,9 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -40,6 +40,8 @@ public class TransactionController {
     @Autowired
     private final TransactionUpdateUseCase transactionUpdateUseCase;
 
+    @Autowired
+    private final BalanceCalculateUseCase balanceCalculateUseCase;
 
     @GetMapping
     public ResponseEntity<Page<TransactionDto>> all(
@@ -90,6 +92,13 @@ public class TransactionController {
         Transaction transaction = transactionFindUseCase.getById(id);
         return ResponseEntity.ok(TransactionMappers.fromDomainToDto(transaction));
 
+    }
+
+
+    @GetMapping("/total-summary")
+    public ResponseEntity<TotalSumaryDto> getTotalSumary(){
+        TotalSumaryDto dto = balanceCalculateUseCase.calculateCurrentBalance();
+        return ResponseEntity.ok(dto);
     }
 
 

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +21,8 @@ public class AccountFindUseCase {
     public List<Account> findAll(){
         return this.accountRepository.all();
     }
-    public Account findById(Integer id){
-        return this.accountRepository.getById(id).orElseThrow();
+    public Optional<Account> findById(Long id){
+        return this.accountRepository.getById(id);
     }
 
 

@@ -26,6 +26,7 @@ public class AccountMappers {
                 .account_type(data.account_type)
                 .initial_balance(data.initial_balance)
                 .status(data.status)
+                .current_balance(data.current_balance)
                 .build();
     }
 }

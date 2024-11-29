@@ -17,4 +17,6 @@ public interface ExpenseSumaryRepository {
     void deleteById(long ig);
 
     List<ExpenseSummary> getByRangeDate(LocalDate start_date, LocalDate end_date);
+    Optional<ExpenseSummary> getLast();
+
 }

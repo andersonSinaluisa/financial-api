@@ -17,6 +17,7 @@ public class AccountDto {
     public String account_number;
 
     public double initial_balance;
+    public double current_balance;
 
     public String status;
 
