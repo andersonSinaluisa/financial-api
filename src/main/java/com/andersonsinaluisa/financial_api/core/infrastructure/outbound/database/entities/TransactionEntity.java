@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -25,6 +26,7 @@ public class TransactionEntity {
 
     public String category;
 
+    public UUID identifier;
     @ManyToOne
     @JoinColumn(name="source_account")
     public AccountEntity source_account;

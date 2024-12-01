@@ -34,6 +34,8 @@ public class AccountEntity {
 
     public LocalDateTime updated_at;
 
+    public String slug;
+
     public boolean deleted;
 
     @OneToMany(

@@ -4,6 +4,7 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Getter
@@ -30,4 +31,6 @@ public class Transaction {
     public LocalDateTime created_at;
 
     public boolean deleted;
+
+    public UUID identifier;
 }

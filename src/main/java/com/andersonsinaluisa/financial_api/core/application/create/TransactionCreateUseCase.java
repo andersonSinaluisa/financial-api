@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,8 +53,7 @@ public class TransactionCreateUseCase {
             throw  new InvalidDateTransaction("La fecha de la transacción no debe ser mayor a la fecha actual");
         }
 
-        data.deleted = false;
-        data.created_at = LocalDateTime.now();
+
         Transaction t =  this.transactionRepository.create(data).orElseThrow();
 
         accountCalculateCurrentBalance.calculateFromTransaction(t);

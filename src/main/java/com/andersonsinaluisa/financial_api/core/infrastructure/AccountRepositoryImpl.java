@@ -79,5 +79,10 @@ public class AccountRepositoryImpl implements AccountRepository {
         }
     }
 
+    @Override
+    public Optional<Account> getBySlug(String slug) {
+        return this.accountPgRepository.findBySlug(slug).map(AccountMapper::fromDomainToDto);
+    }
+
 
 }

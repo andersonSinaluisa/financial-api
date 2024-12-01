@@ -25,6 +25,9 @@ public class AccountFindUseCase {
         return this.accountRepository.getById(id);
     }
 
+    public Account findBySlug(String slug){
+        return this.accountRepository.getBySlug(slug).orElseThrow();
+    }
 
     public Page<Account> findAll(Pageable pageable, String search){
         if(search==null || search.isBlank()){

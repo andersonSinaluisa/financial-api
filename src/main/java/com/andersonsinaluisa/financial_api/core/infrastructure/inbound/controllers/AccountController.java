@@ -53,6 +53,11 @@ public class AccountController {
 
 
 
+    @GetMapping("/{slug}")
+    public ResponseEntity<AccountDto> get(@PathVariable("slug") String slug){
+        Account a = accountFindUseCase.findBySlug(slug);
+        return ResponseEntity.ok(AccountMappers.fromDomainToDto(a));
+    }
 
     @PostMapping
     public ResponseEntity<AccountDto> create(@RequestBody AccountCreateDto data){

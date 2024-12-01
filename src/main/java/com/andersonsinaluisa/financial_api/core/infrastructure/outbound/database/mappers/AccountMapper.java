@@ -15,6 +15,8 @@ public abstract class AccountMapper {
                 .initial_balance(data.initial_balance)
                 .status(data.status)
                 .created_at(data.created_at)
+                .slug(data.slug)
+                .current_balance(data.current_balance)
                 .updated_at(data.updated_at).build();
 
         return obj;
@@ -30,6 +32,8 @@ public abstract class AccountMapper {
                 .initial_balance(data.initial_balance)
                 .status(data.status)
                 .created_at(data.created_at)
+                .slug(data.slug)
+                .current_balance(data.current_balance)
                 .updated_at(data.updated_at).build();
     }
 

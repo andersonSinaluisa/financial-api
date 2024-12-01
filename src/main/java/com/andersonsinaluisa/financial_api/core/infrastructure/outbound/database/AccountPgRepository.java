@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountPgRepository extends JpaRepository<AccountEntity, Long> {
 
 
     @Query("SELECT a FROM AccountEntity a WHERE LOWER(a.account_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.account_number) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<AccountEntity> findBySearch(@Param("search") String search, Pageable pageable);
+
+
+    Optional<AccountEntity> findBySlug(String slug);
 }

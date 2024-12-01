@@ -24,4 +24,6 @@ public class AccountDto {
     public LocalDateTime created_at;
 
     public LocalDateTime updated_at;
+
+    public String slug;
 }

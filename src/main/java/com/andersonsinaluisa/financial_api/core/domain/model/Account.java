@@ -27,4 +27,6 @@ public class Account {
 
     public LocalDateTime updated_at;
 
+    public String slug;
+
 }

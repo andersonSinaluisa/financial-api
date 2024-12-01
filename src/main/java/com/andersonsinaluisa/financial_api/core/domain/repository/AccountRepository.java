@@ -16,6 +16,6 @@ public interface AccountRepository {
     Page<Account> all(String search, Pageable pageable);
     List<Account> all();
     void deleteById(long ig);
-
+    Optional<Account> getBySlug(String slug);
 
 }
