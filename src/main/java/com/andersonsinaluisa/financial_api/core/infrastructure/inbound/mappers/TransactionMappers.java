@@ -16,7 +16,7 @@ public class TransactionMappers {
                 .amount(data.amount)
                 .identifier(UUID.randomUUID())
                 .destination_account(data.destination_account_id)
-                .source_account(data.destination_account_id)
+                .source_account(data.source_account_id)
                 .description(data.description)
                 .currency(data.currency)
                 .category(data.category)

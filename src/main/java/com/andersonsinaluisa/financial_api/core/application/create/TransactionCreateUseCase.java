@@ -53,7 +53,7 @@ public class TransactionCreateUseCase {
             throw  new InvalidDateTransaction("La fecha de la transacción no debe ser mayor a la fecha actual");
         }
 
-
+        data.identifier = UUID.randomUUID();
         Transaction t =  this.transactionRepository.create(data).orElseThrow();
 
         accountCalculateCurrentBalance.calculateFromTransaction(t);

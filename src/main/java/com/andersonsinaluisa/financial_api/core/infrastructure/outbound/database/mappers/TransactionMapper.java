@@ -14,11 +14,12 @@ public class TransactionMapper {
                 .currency(data.currency)
                 .description(data.description)
                 .created_at(data.created_at)
-                .source_account(data.source_account==null?0:data.source_account.id)
+                .source_account(data.source_account_id)
                 .transaction_date(data.transaction_date)
                 .transaction_type(data.transaction_type)
                 .deleted(data.deleted)
-                .destination_account(data.destination_account==null?0:data.destination_account.id)
+                .identifier(data.identifier)
+                .destination_account(data.destination_account_id)
                 .build();
 
     }
@@ -31,6 +32,7 @@ public class TransactionMapper {
                 .transaction_type(data.transaction_type)
                 .created_at(data.created_at)
                 .amount(data.amount)
+                .identifier(data.identifier)
                 .source_account_id(data.source_account)
                 .destination_account_id(data.destination_account)
                 .category(data.category)
