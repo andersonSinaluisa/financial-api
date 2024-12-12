@@ -20,7 +20,7 @@ public class AccountCalculateCurrentBalance {
     @Autowired
     private AccountFindUseCase accountFindUseCase;
 
-    public void calculateFromTransaction(Transaction transaction) {
+    public synchronized void calculateFromTransaction(Transaction transaction) {
         // Manejar cuenta origen
         if (transaction.source_account != null) {
             accountFindUseCase.findById(transaction.source_account).ifPresent(account_source -> {

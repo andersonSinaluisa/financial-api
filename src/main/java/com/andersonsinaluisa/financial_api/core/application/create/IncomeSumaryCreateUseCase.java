@@ -27,7 +27,7 @@ public class IncomeSumaryCreateUseCase {
     }
 
 
-    public double calculateTotalIncome( Transaction transactions){
+    public synchronized double calculateTotalIncome( Transaction transactions){
 
         Optional<IncomeSumary> incomeSumaryOptional = incomeSumaryRepository.getLast();
         double total_account = 0;

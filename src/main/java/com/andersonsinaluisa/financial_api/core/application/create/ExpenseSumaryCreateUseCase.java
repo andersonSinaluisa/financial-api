@@ -24,7 +24,7 @@ public class ExpenseSumaryCreateUseCase {
     }
 
 
-    public double calculateTotaExpense(Transaction transaction){
+    public synchronized double calculateTotaExpense(Transaction transaction){
         Optional<ExpenseSummary> incomeSumaryOptional = expenseSumaryRepository.getLast();
         double total_account = 0;
 
