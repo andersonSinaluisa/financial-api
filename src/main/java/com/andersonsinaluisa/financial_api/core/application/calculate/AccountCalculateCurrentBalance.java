@@ -23,7 +23,9 @@ public class AccountCalculateCurrentBalance {
     public synchronized void calculateFromTransaction(Transaction transaction) {
         // Manejar cuenta origen
         if (transaction.source_account != null) {
+            //encontrar la cuenta a afectar
             accountFindUseCase.findById(transaction.source_account).ifPresent(account_source -> {
+                //obtener la operacion a realizar (suma o resta)
                 double adjustment = calculateAdjustmentForSource(transaction);
                 if (canApplyTransaction(account_source, adjustment)) {
                     account_source.current_balance += adjustment;
@@ -55,7 +57,7 @@ public class AccountCalculateCurrentBalance {
             case AJUSTE:
                 return transaction.amount;
             default:
-                throw new IllegalArgumentException("Tipo de transacción no válido: " + transaction.transaction_type);
+                return 0;
         }
     }
 
@@ -66,11 +68,12 @@ public class AccountCalculateCurrentBalance {
             case GASTO:
             case REEMBOLSO:
             case RETIRO:
+            case INGRESO:
                 return transaction.amount;
             case AJUSTE:
                 return -transaction.amount;
             default:
-                throw new IllegalArgumentException("Tipo de transacción no válido: " + transaction.transaction_type);
+                return 0;
         }
     }
 

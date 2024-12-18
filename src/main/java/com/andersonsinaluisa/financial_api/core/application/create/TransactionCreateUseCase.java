@@ -48,8 +48,8 @@ public class TransactionCreateUseCase {
                 throw new InvalidDataTransaction("Verifique la cuenta de destino y la cuenta de origen");
             }
         }
-
-        if(data.transaction_date.isAfter(LocalDateTime.now())){
+        LocalDateTime now = LocalDateTime.now();
+        if(data.transaction_date.isAfter(now)){
             throw  new InvalidDateTransaction("La fecha de la transacción no debe ser mayor a la fecha actual");
         }
 
