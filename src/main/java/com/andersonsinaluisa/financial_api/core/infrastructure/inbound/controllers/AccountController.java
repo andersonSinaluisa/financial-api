@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -37,49 +38,47 @@ public class AccountController {
     private final AccountDeleteUseCase deleteUseCase;
 
     @GetMapping
-    public ResponseEntity<Page<AccountDto>> all(
+    public Mono<ResponseEntity<Page<AccountDto>>> all(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "true") boolean ascending,
             @RequestParam(defaultValue = "") String search
-    ){
+    ) {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Account> list = accountFindUseCase.findAll(pageable,search);
-        Page<AccountDto> listDto =  list.map(AccountMappers::fromDomainToDto);
-        return ResponseEntity.ok(listDto);
+
+        return accountFindUseCase.findAll(pageable, search)
+                .map(accountPage -> accountPage.map(AccountMappers::fromDomainToDto))
+                .map(ResponseEntity::ok);
     }
 
 
 
     @GetMapping("/{slug}")
-    public ResponseEntity<AccountDto> get(@PathVariable("slug") String slug){
-        Account a = accountFindUseCase.findBySlug(slug);
-        return ResponseEntity.ok(AccountMappers.fromDomainToDto(a));
+    public Mono<ResponseEntity<AccountDto>> get(@PathVariable("slug") String slug){
+        return accountFindUseCase.findBySlug(slug).map(AccountMappers::fromDomainToDto).map(ResponseEntity::ok);
     }
 
     @PostMapping
-    public ResponseEntity<AccountDto> create(@RequestBody AccountCreateDto data){
+    public Mono<ResponseEntity<AccountDto>> create(@RequestBody AccountCreateDto data){
         Account a = AccountMappers.fromDtoToDomain(data);
-        a = accountCreateUseCase.create(a);
-        return ResponseEntity.ok(AccountMappers.fromDomainToDto(a));
+        return accountCreateUseCase.create(a).map(AccountMappers::fromDomainToDto).map(ResponseEntity::ok);
     }
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<AccountDto> update(@PathVariable("id") long id,@RequestBody AccountCreateDto data){
+    public Mono<ResponseEntity<AccountDto>> update(@PathVariable("id") long id,@RequestBody AccountCreateDto data){
         Account a = AccountMappers.fromDtoToDomain(data);
         a.id = id;
-        a = accountUpdateUseCase.update(a);
-        return ResponseEntity.ok(AccountMappers.fromDomainToDto(a));
+        return accountUpdateUseCase.update(a).map(AccountMappers::fromDomainToDto).map(ResponseEntity::ok);
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable("id") long id){
-        deleteUseCase.deleteOne(id);
-        return ResponseEntity.ok().build();
+    public Mono<ResponseEntity<Void>> delete(@PathVariable("id") long id){
+
+        return  deleteUseCase.deleteOne(id).map(ResponseEntity::ok);
     }
 
 }

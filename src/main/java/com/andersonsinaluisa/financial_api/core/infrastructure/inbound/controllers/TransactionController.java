@@ -13,12 +13,11 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.trans
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.mappers.TransactionMappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,61 +43,56 @@ public class TransactionController {
     private final BalanceCalculateUseCase balanceCalculateUseCase;
 
     @GetMapping
-    public ResponseEntity<Page<TransactionDto>> all(
+    public Mono<ResponseEntity<Page<TransactionDto>>> all(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "true") boolean ascending,
-            @RequestParam(defaultValue = "")LocalDate start_date,
-            @RequestParam(defaultValue = "") LocalDate end_date
-    ){
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start_date,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end_date
+    ) {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Transaction> d =  transactionFindUseCase.all(pageable,start_date,end_date);
-        Page<TransactionDto> response = d.map(TransactionMappers::fromDomainToDto);
-        return ResponseEntity.ok(response);
+
+        return transactionFindUseCase.all(pageable, start_date, end_date)
+                .map(transactionsPage -> transactionsPage.map(TransactionMappers::fromDomainToDto))
+                .map(ResponseEntity::ok);
     }
 
     @PostMapping
-    public ResponseEntity<TransactionDto> create(@RequestBody TransactionCreateDto data) throws Exception {
-
-
-        Transaction a = createUseCase.create(TransactionMappers.fromDtoToDomain(data));
-
-        return ResponseEntity.ok(TransactionMappers.fromDomainToDto(a));
-
-
+    public Mono<ResponseEntity<TransactionDto>> create(@RequestBody TransactionCreateDto data) {
+        return createUseCase.create(TransactionMappers.fromDtoToDomain(data))
+                .map(TransactionMappers::fromDomainToDto)
+                .map(ResponseEntity::ok);
     }
-
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TransactionDto> update(@PathVariable("id") long id,
-                                                 @RequestBody TransactionCreateDto data){
+    public Mono<ResponseEntity<TransactionDto>> update(@PathVariable long id,
+                                                       @RequestBody TransactionCreateDto data) {
         Transaction transaction = TransactionMappers.fromDtoToDomain(data);
         transaction.id = id;
-        transaction = transactionUpdateUseCase.update(transaction);
-        return ResponseEntity.ok(TransactionMappers.fromDomainToDto(transaction));
+        return transactionUpdateUseCase.update(transaction)
+                .map(TransactionMappers::fromDomainToDto)
+                .map(ResponseEntity::ok);
     }
 
-
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable("id") long id){
-        deleteUseCase.delete(id);
-        return ResponseEntity.ok().build();
+    public Mono<ResponseEntity<Void>> delete(@PathVariable long id) {
+        return deleteUseCase.delete(id)
+                .thenReturn(ResponseEntity.ok().<Void>build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionDto> get(@PathVariable("id") long id){
-        Transaction transaction = transactionFindUseCase.getById(id);
-        return ResponseEntity.ok(TransactionMappers.fromDomainToDto(transaction));
-
+    public Mono<ResponseEntity<TransactionDto>> get(@PathVariable long id) {
+        return transactionFindUseCase.getById(id)
+                .map(TransactionMappers::fromDomainToDto)
+                .map(ResponseEntity::ok);
     }
 
-
     @GetMapping("/total-summary")
-    public ResponseEntity<TotalSumaryDto> getTotalSumary(){
-        TotalSumaryDto dto = balanceCalculateUseCase.calculateCurrentBalance();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<TotalSumaryDto>> getTotalSummary() {
+        return balanceCalculateUseCase.calculateCurrentBalance()
+                .map(ResponseEntity::ok);
     }
 
 

@@ -1,25 +1,16 @@
 package com.andersonsinaluisa.financial_api.core.application.calculate;
 
-import com.andersonsinaluisa.financial_api.core.application.create.ExpenseSumaryCreateUseCase;
-import com.andersonsinaluisa.financial_api.core.application.create.IncomeSumaryCreateUseCase;
 import com.andersonsinaluisa.financial_api.core.application.find.ExpenseSumaryFindUseCase;
 import com.andersonsinaluisa.financial_api.core.application.find.IncomeSumaryFindUseCase;
 import com.andersonsinaluisa.financial_api.core.application.find.TransactionFindUseCase;
 import com.andersonsinaluisa.financial_api.core.domain.model.Account;
-import com.andersonsinaluisa.financial_api.core.domain.model.ExpenseSummary;
-import com.andersonsinaluisa.financial_api.core.domain.model.IncomeSumary;
-import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
 import com.andersonsinaluisa.financial_api.core.domain.repository.AccountRepository;
-import com.andersonsinaluisa.financial_api.core.domain.repository.ExpenseSumaryRepository;
-import com.andersonsinaluisa.financial_api.core.domain.repository.IncomeSumaryRepository;
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.transaction.TotalSumaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,28 +29,34 @@ public class BalanceCalculateUseCase {
     @Autowired
     private TransactionFindUseCase transactionFindUseCase;
 
-    public TotalSumaryDto calculateCurrentBalance(){
-        List<Account> accountList = repository.all();
+    public Mono<TotalSumaryDto> calculateCurrentBalance(){
+        Mono<Double> totalAccountMono = repository.all()
+                .map(Account::getInitial_balance)
+                .reduce(0.0, Double::sum);
 
-        double total_account = 0;
-        for(Account account:accountList){
-            total_account += account.initial_balance;
-        }
 
-        Optional<IncomeSumary> total_income_optional = incomeSumaryFindUseCase.getCurrent();
-        Optional<ExpenseSummary> total_expense_optional = expenseSumaryFindUseCase.getCurrent();
-        double total_income = 0;
-        if(total_income_optional.isPresent()){
-            total_income = total_income_optional.get().total_income;
-        }
-        double total_expense = 0;
-        if(total_expense_optional.isPresent()){
-            total_expense = total_expense_optional.get().total_expense;
-        }
+        Mono<Double> totalIncomeMono = incomeSumaryFindUseCase.getCurrent()
+                .map(e-> e.total_income);
 
-        total_account= total_account + total_income - total_expense;
 
-        return TotalSumaryDto.builder().totalExpense(total_expense).totalIncome(total_income).balance(total_account).build();
+        Mono<Double> totalExpenseMono = expenseSumaryFindUseCase.getCurrent()
+                .map(e->e.total_expense);
+
+
+
+        return Mono.zip(totalAccountMono,totalIncomeMono,totalExpenseMono).map(tuple ->{
+            double totalAccount = tuple.getT1();
+            double totalIncome = tuple.getT2();
+            double totalExpense = tuple.getT3();
+            double balance = totalAccount + totalIncome - totalExpense;
+
+            return TotalSumaryDto.builder()
+                    .totalIncome(totalIncome)
+                    .totalExpense(totalExpense)
+                    .balance(balance)
+                    .build();
+        });
+
 
     }
 

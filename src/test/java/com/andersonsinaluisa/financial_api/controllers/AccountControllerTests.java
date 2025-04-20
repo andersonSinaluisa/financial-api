@@ -3,11 +3,8 @@ package com.andersonsinaluisa.financial_api.controllers;
 import com.andersonsinaluisa.financial_api.FinancialApiApplication;
 import com.andersonsinaluisa.financial_api.core.application.create.AccountCreateUseCase;
 import com.andersonsinaluisa.financial_api.core.domain.model.Account;
-import com.andersonsinaluisa.financial_api.core.domain.model.TypeTransaction;
+import com.andersonsinaluisa.financial_api.core.domain.objectValues.TypeTransaction;
 import com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.account.AccountCreateDto;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonFactoryBuilder;
-import com.fasterxml.jackson.core.JsonParser;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.time.LocalDateTime;
 

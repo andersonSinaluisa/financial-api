@@ -1,8 +1,9 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
 
-import com.andersonsinaluisa.financial_api.core.domain.model.Account;
-import jakarta.persistence.*;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,6 @@ import java.util.List;
 
 
 @Table(name="invoice")
-@Entity
 @Builder
 @Getter
 @NoArgsConstructor // This will generate the default constructor// Generates a no-argument constructor
@@ -19,32 +19,24 @@ import java.util.List;
 public class InvoiceEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public double amount;
 
-    public String doc_number;
+    public String docNumber;
 
-    public String num_at_card;
+    public String numAtCard;
 
-    public LocalDateTime due_date;
+    public LocalDateTime dueDate;
 
     public String status;
 
     public String type;
 
-    @ManyToOne
-    @JoinColumn(name = "account")
-    public AccountEntity account;
+    public Long accountId;
 
-    public LocalDateTime created_at;
+    public LocalDateTime createdAt;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            mappedBy = "invoice"
-    )
-    public List<InvoiceMetaEntity> metaEntityList;
 
 
 }

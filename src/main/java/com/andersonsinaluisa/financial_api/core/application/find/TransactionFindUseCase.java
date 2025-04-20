@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -19,11 +21,11 @@ public class TransactionFindUseCase {
     @Autowired
     private final TransactionRepository repository;
 
-    public Transaction getById(long id){
-        return  repository.getById(id).orElseThrow();
+    public Mono<Transaction> getById(long id){
+        return  repository.getById(id);
     }
 
-    public Page<Transaction> all(Pageable pageable, LocalDate start, LocalDate end){
+    public Mono<Page<Transaction>> all(Pageable pageable, LocalDate start, LocalDate end){
 
         Calendar calendar = Calendar.getInstance();
 
@@ -38,15 +40,15 @@ public class TransactionFindUseCase {
         return repository.getByRange(start,end,pageable);
     }
 
-    public List<Transaction> getByMonthAndYear(int month,int year){
+    public Flux<Transaction> getByMonthAndYear(int month, int year){
         return repository.getByMonthAndYear(month,year);
     }
 
-    public List<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id){
+    public Flux<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id){
         return repository.getByAccountAndMonthAndYear(month,year,account_id);
     }
 
-    public  List<Transaction> getByRange(LocalDate start, LocalDate end){
+    public  Flux<Transaction> getByRange(LocalDate start, LocalDate end){
         return repository.getByRange(start,end);
     }
 }

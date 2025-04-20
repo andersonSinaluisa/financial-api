@@ -1,10 +1,10 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
-@Entity
 @Table(name="assets_movement")
 @Builder
 @Getter
@@ -13,20 +13,18 @@ import java.time.LocalDateTime;
 @Setter
 public class AssetsMovementEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @ManyToOne
-    @JoinColumn(name="asset")
-    public AssetsLiabilitiesEntity asset;
+
+    public Long assetId;
 
 
-    public LocalDateTime movement_date;
+    public LocalDateTime movementDate;
 
     public String description;
 
     public double amount;
 
-    public LocalDateTime created_at;
+    public LocalDateTime createdAt;
 
 }

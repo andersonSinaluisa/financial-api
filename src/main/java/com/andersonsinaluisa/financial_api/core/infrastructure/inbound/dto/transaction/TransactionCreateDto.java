@@ -1,5 +1,6 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.inbound.dto.transaction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,7 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class TransactionCreateDto {
-
     public LocalDateTime transaction_date;
 
     public double amount;

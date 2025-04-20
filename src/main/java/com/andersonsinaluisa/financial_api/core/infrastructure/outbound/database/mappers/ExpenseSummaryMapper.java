@@ -8,20 +8,20 @@ public class ExpenseSummaryMapper {
     public static ExpenseSummaryEntity fromDomainToEntity(ExpenseSummary data){
         return ExpenseSummaryEntity.builder()
                 .id(data.id)
-                .total_expense(data.total_expense)
+                .totalExpense(data.total_expense)
                 .category(data.category)
-                .created_at(data.created_at)
-                .report_date(data.report_date)
+                .createdAt(data.created_at)
+                .reportDate(data.report_date)
                 .build();
     }
 
     public static ExpenseSummary fromEntityToDomain(ExpenseSummaryEntity data){
         return ExpenseSummary.builder()
-                .report_date(data.report_date)
+                .report_date(data.reportDate)
                 .category(data.category)
                 .id(data.id)
-                .total_expense(data.total_expense)
-                .created_at(data.created_at)
+                .total_expense(data.totalExpense)
+                .created_at(data.createdAt)
                 .build();
     }
 }

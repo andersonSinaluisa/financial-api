@@ -8,11 +8,11 @@ public class BudgetMapper {
     static Budget fromEntityToDomain(BudgetEntity data){
         return Budget.builder()
                 .id(data.id)
-                .assigned_budget(data.assigned_budget)
-                .remaining_budget(data.remaining_budget)
+                .assigned_budget(data.assignedBudget)
+                .remaining_budget(data.remainingBudget)
                 .project(data.project)
-                .spent_amount(data.spent_amount)
-                .created_at(data.created_at)
+                .spent_amount(data.spentAmount)
+                .created_at(data.createdAt)
                 .department(data.department)
                 .build();
     }
@@ -20,11 +20,11 @@ public class BudgetMapper {
 
     static BudgetEntity fromDomainToEntity(Budget data){
         return BudgetEntity.builder()
-                .assigned_budget(data.assigned_budget)
-                .remaining_budget(data.remaining_budget)
+                .assignedBudget(data.assigned_budget)
+                .remainingBudget(data.remaining_budget)
                 .project(data.project)
-                .spent_amount(data.spent_amount)
-                .created_at(data.created_at)
+                .spentAmount(data.spent_amount)
+                .createdAt(data.created_at)
                 .department(data.department)
                 .build();
     }

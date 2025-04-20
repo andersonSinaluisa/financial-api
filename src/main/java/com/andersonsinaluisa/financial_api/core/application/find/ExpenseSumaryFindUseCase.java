@@ -5,6 +5,8 @@ import com.andersonsinaluisa.financial_api.core.domain.repository.ExpenseSumaryR
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,16 +17,18 @@ public class ExpenseSumaryFindUseCase {
 
     @Autowired
     private final ExpenseSumaryRepository expenseSumaryRepository;
-
-    public List<ExpenseSummary> all(){
+    public Flux<ExpenseSummary> all(){
         return expenseSumaryRepository.all();
     }
 
-    public ExpenseSummary getById(long id){
-        return expenseSumaryRepository.getById(id).orElseThrow();
+    public Mono<ExpenseSummary> getById(long id){
+
+        return expenseSumaryRepository.getById(id);
     }
 
-    public Optional<ExpenseSummary> getCurrent(){
+    public Mono<ExpenseSummary> getCurrent(){
         return expenseSumaryRepository.getLast();
     }
+
+
 }

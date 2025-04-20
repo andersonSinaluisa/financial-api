@@ -1,13 +1,13 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
 @Table(name="income_summary")
 @Builder
 @Getter
@@ -16,19 +16,18 @@ import java.time.LocalDateTime;
 @Setter
 public class IncomeSumaryEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public String category;
 
-    public double total_income;
+    public double totalIncome;
 
-    public LocalDateTime report_date;
+    public LocalDateTime reportDate;
 
-    public LocalDateTime created_at;
+    public LocalDateTime createdAt;
 
-    public LocalDate start_date;
+    public LocalDate startDate;
 
-    public LocalDate end_date;
+    public LocalDate endDate;
 
 }

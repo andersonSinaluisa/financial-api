@@ -1,5 +1,6 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure;
 
+import com.andersonsinaluisa.financial_api.core.domain.model.Account;
 import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
 import com.andersonsinaluisa.financial_api.core.domain.repository.TransactionRepository;
 import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.TransactionPgRepository;
@@ -9,8 +10,11 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.swing.text.html.Option;
 import java.time.LocalDate;
@@ -22,85 +26,90 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class TransactionRepositoryImpl implements TransactionRepository {
 
-    @Autowired
     public final TransactionPgRepository transactionPgRepository;
 
     @Override
-    public Optional<Transaction> create(Transaction data) {
+    public Mono<Transaction> create(Transaction data) {
 
         TransactionEntity entity = TransactionMapper.fromDtoToDomain(data);
-        entity = transactionPgRepository.save(entity);
-        return Optional.of(TransactionMapper.fromDomainToDto(entity));
+        return transactionPgRepository.save(entity).map(TransactionMapper::fromDomainToDto);
     }
 
     @Override
-    public Optional<Transaction> update(Transaction data) {
+    public Mono<Transaction> update(Transaction data) {
         TransactionEntity entity = TransactionMapper.fromDtoToDomain(data);
-        entity = transactionPgRepository.save(entity);
-        return Optional.of(TransactionMapper.fromDomainToDto(entity));
+        return transactionPgRepository.save(entity).map(TransactionMapper::fromDomainToDto);
 
     }
 
     @Override
-    public Optional<Transaction> getById(long id) {
+    public Mono<Transaction> getById(long id) {
 
-        Optional<TransactionEntity> t = transactionPgRepository.findById(id);
-        return t.map(TransactionMapper::fromDomainToDto);
+        return transactionPgRepository.findById(id).map(TransactionMapper::fromDomainToDto);
     }
 
     @Override
-    public Page<Transaction> all(Pageable pageable) {
-        Page<TransactionEntity> stream = transactionPgRepository.findAll(pageable);
-        return stream.map(TransactionMapper::fromDomainToDto);
-    }
+    public Mono<Page<Transaction>>all(Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int offset = (int) pageable.getOffset();
 
-    @Override
-    public void deleteById(long id) {
-        Optional<TransactionEntity> e = transactionPgRepository.findById(id);
-        if(e.isPresent()){
-            TransactionEntity obj = e.get();
-            obj.deleted = true;
-            transactionPgRepository.save(obj);
-            transactionPgRepository.deleteById(id);
-        }
-
-    }
-
-    @Override
-    public List<Transaction> getByMonthAndYear(int month, int year) {
-
-        List<Transaction> transactions = transactionPgRepository
-                .findByTransactionDateYearAndTransactionDateMonth(year,month)
-                .stream()
-                .map(TransactionMapper::fromDomainToDto).toList();
-        return transactions;
-    }
-
-    @Override
-    public List<Transaction> getByAccountAndMonthAndYear(int month, int year,Long account_id) {
-
-        List<Transaction> transactions = transactionPgRepository
-                .findByTransactionDateYearAndTransactionDateMonthAndSourceAccount_Id(year,month,account_id)
-                .stream()
-                .map(TransactionMapper::fromDomainToDto).toList();
-        return List.of();
-    }
-
-    @Override
-    public List<Transaction> getByRange(LocalDate start, LocalDate end) {
-
-        List<Transaction> list = transactionPgRepository.findByTransactionDateBetween(start,end)
-                .stream()
+        Mono<List<Transaction>> content = transactionPgRepository
+                .findAllByLimitAndOffset(pageSize, offset)
                 .map(TransactionMapper::fromDomainToDto)
-                .toList();
-        return list;
+                .collectList();
+
+        Mono<Long> count = transactionPgRepository.count();
+
+        return Mono.zip(content, count)
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+
     }
 
     @Override
-    public Page<Transaction> getByRange(LocalDate start, LocalDate end, Pageable pageable) {
-        Page<TransactionEntity> page = transactionPgRepository.findByTransactionDateBetween(
-                start, end, pageable
-        );
-        return page.map(TransactionMapper::fromDomainToDto);
+    public Mono<Void> deleteById(long id) {
+
+        return transactionPgRepository.findById(id).flatMap(e ->{
+            e.setDeleted(true);
+           return transactionPgRepository.save(e);
+        }).then();
+    }
+
+    @Override
+    public Flux<Transaction> getByMonthAndYear(int month, int year) {
+
+        return transactionPgRepository
+                .findByTransactionDateYearAndTransactionDateMonth(year,month)
+                .map(TransactionMapper::fromDomainToDto);
+    }
+
+    @Override
+    public Flux<Transaction> getByAccountAndMonthAndYear(int month, int year,Long account_id) {
+
+        return transactionPgRepository
+                .findByYearMonthAndDestinationAccount(year,month,account_id)
+                .map(TransactionMapper::fromDomainToDto);
+    }
+
+    @Override
+    public Flux<Transaction> getByRange(LocalDate start, LocalDate end) {
+
+        return transactionPgRepository.findByTransactionDateBetween(start,end)
+                .map(TransactionMapper::fromDomainToDto);
+    }
+
+    @Override
+    public Mono<Page<Transaction>> getByRange(LocalDate start, LocalDate end, Pageable pageable) {
+        long limit = pageable.getPageSize();
+        long offset = pageable.getOffset();
+
+        Mono<List<Transaction>> content = transactionPgRepository
+                .findByTransactionDateBetween(start, end, limit, offset)
+                .map(TransactionMapper::fromDomainToDto)
+                .collectList();
+
+        Mono<Long> count = transactionPgRepository.countByTransactionDateBetween(start, end); // necesitas definir este método
+
+        return Mono.zip(content, count)
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
 }

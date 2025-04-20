@@ -5,6 +5,8 @@ import com.andersonsinaluisa.financial_api.core.domain.repository.IncomeSumaryRe
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,15 +18,17 @@ public class IncomeSumaryFindUseCase {
     @Autowired
     private final IncomeSumaryRepository incomeSumaryRepository;
 
-    public List<IncomeSumary> all(){
+    public Flux<IncomeSumary> all(){
         return incomeSumaryRepository.all();
     }
 
-    public IncomeSumary getById(long id){
-        return  incomeSumaryRepository.getById(id).orElseThrow();
+    public Mono<IncomeSumary> getById(long id){
+        return  incomeSumaryRepository.getById(id);
     }
 
-    public Optional<IncomeSumary> getCurrent(){
+    public Mono<IncomeSumary> getCurrent(){
         return incomeSumaryRepository.getLast();
     }
+
+
 }

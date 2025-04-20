@@ -1,4 +1,4 @@
-package com.andersonsinaluisa.financial_api.core.domain.model;
+package com.andersonsinaluisa.financial_api.core.domain.objectValues;
 
 public enum TypeTransaction {
     INGRESO("INGRESO"),         // Transacciones que representan ingresos de dinero
@@ -21,4 +21,15 @@ public enum TypeTransaction {
     public String getValue() {
         return value;
     }
+
+    // Método estático para validar el tipo de transacción
+    public static boolean isValidType(String transactionType) {
+        for (TypeTransaction type : TypeTransaction.values()) {
+            if (type.getValue().equals(transactionType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

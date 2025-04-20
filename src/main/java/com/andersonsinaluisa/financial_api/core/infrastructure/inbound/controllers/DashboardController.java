@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
@@ -22,10 +23,10 @@ public class DashboardController {
 
 
     @GetMapping
-    public ResponseEntity<TotalSumaryDto> get(){
+    public Mono<ResponseEntity<TotalSumaryDto>> get(){
 
-        TotalSumaryDto d = balanceCalculateUseCase.calculateCurrentBalance();
 
-       return ResponseEntity.ok(d);
+
+       return balanceCalculateUseCase.calculateCurrentBalance().map(ResponseEntity::ok);
     }
 }

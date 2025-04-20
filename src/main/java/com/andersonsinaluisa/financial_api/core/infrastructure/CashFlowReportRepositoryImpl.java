@@ -8,6 +8,8 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,42 +19,39 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class CashFlowReportRepositoryImpl implements CashFlowReportRepository {
 
-    @Autowired
     private final CashFlowReportPgRepository repository;
 
     @Override
-    public Optional<CashFlowReport> create(CashFlowReport data) {
+    public Mono<CashFlowReport> create(CashFlowReport data) {
         CashFlowReportEntity cashFlowReportEntity = CashFlowReportMapper.fromDomainToEntity(data);
-        cashFlowReportEntity = repository.save(cashFlowReportEntity);
-        return Optional.of(CashFlowReportMapper.fromEntityToDomain(cashFlowReportEntity));
+        return  repository.save(cashFlowReportEntity).map(
+                CashFlowReportMapper::fromEntityToDomain
+        );
     }
 
     @Override
-    public Optional<CashFlowReport> update(CashFlowReport data) {
+    public Mono<CashFlowReport> update(CashFlowReport data) {
         CashFlowReportEntity c = CashFlowReportMapper.fromDomainToEntity(data);
-        c = repository.save(c);
-        return Optional.of(CashFlowReportMapper.fromEntityToDomain(c));
+
+        return repository.save(c).map(CashFlowReportMapper::fromEntityToDomain);
     }
 
     @Override
-    public Optional<CashFlowReport> getById(long id)
+    public Mono<CashFlowReport> getById(long id)
     {
-
-        Optional<CashFlowReportEntity> c = repository.findById(id);
-        return c.map(CashFlowReportMapper::fromEntityToDomain);
+        return  repository.findById(id).map(CashFlowReportMapper::fromEntityToDomain);
     }
 
     @Override
-    public List<CashFlowReport> all() {
+    public Flux<CashFlowReport> all() {
 
-        Stream<CashFlowReport> stream = repository.findAll().stream().map(CashFlowReportMapper::fromEntityToDomain);
 
-        return stream.toList();
+        return repository.findAll().map(CashFlowReportMapper::fromEntityToDomain);
 
     }
 
     @Override
-    public void deleteById(long id) {
-        repository.deleteById(id);
+    public Mono<Void> deleteById(long id) {
+        return repository.deleteById(id);
     }
 }

@@ -5,6 +5,7 @@ import com.andersonsinaluisa.financial_api.core.domain.repository.CashFlowReport
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ public class CashFlowReportCreateUseCase {
     private final CashFlowReportRepository repository;
 
 
-    public CashFlowReport create(CashFlowReport data){
-        return  repository.create(data).orElseThrow();
+    public Mono<CashFlowReport> create(CashFlowReport data){
+        return  repository.create(data);
     }
 }

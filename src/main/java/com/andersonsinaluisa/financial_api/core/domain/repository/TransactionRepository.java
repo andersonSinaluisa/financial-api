@@ -4,25 +4,27 @@ import com.andersonsinaluisa.financial_api.core.domain.model.Account;
 import com.andersonsinaluisa.financial_api.core.domain.model.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface TransactionRepository {
-    Optional<Transaction> create(Transaction data);
-    Optional<Transaction> update(Transaction data);
-    Optional<Transaction> getById(long id);
-    Page<Transaction> all(Pageable pageable);
-    void deleteById(long ig);
+    Mono<Transaction> create(Transaction data);
+    Mono<Transaction> update(Transaction data);
+    Mono<Transaction> getById(long id);
+    Mono<Page<Transaction>> all(Pageable pageable);
+    Mono<Void> deleteById(long ig);
 
-    List<Transaction> getByMonthAndYear(int month, int year);
+    Flux<Transaction> getByMonthAndYear(int month, int year);
 
-    List<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id);
+    Flux<Transaction> getByAccountAndMonthAndYear(int month, int year, Long account_id);
 
-    List<Transaction> getByRange(LocalDate start,LocalDate end);
+    Flux<Transaction> getByRange(LocalDate start, LocalDate end);
 
 
-    Page<Transaction> getByRange(LocalDate start, LocalDate end, Pageable pageable);
+    Mono<Page<Transaction>> getByRange(LocalDate start, LocalDate end, Pageable pageable);
 
 }

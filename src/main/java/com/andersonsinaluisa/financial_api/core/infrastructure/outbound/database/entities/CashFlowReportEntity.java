@@ -1,12 +1,12 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Table(name="cash_flow_report")
 @Builder
 @Getter
@@ -15,18 +15,17 @@ import java.time.LocalDateTime;
 @Setter
 public class CashFlowReportEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public LocalDateTime report_date;
+    public LocalDateTime reportDate;
 
-    public double starting_balance;
+    public double startingBalance;
 
-    public double total_income;
+    public double totalIncome;
 
-    public double total_expense;
+    public double totalExpense;
 
-    public double ending_balance;
+    public double endingBalance;
 
-    public LocalDateTime created_at;
+    public LocalDateTime createdAt;
 }

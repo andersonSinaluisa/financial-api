@@ -1,13 +1,12 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
-
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Table(name="balance_sheet_entity")
-@Entity
 @Builder
 @Getter
 @NoArgsConstructor // This will generate the default constructor// Generates a no-argument constructor
@@ -15,14 +14,13 @@ import java.time.LocalDateTime;
 @Setter
 public class BalanceSheetEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public double assets;
 
     public double liabilities;
 
-    public LocalDateTime report_date;
+    public LocalDateTime reportDate;
 
-    public LocalDateTime created_at;
+    public LocalDateTime createdAt;
 }

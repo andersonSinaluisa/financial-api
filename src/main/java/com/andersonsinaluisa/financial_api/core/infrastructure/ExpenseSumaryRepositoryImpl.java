@@ -8,6 +8,8 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,33 +19,30 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ExpenseSumaryRepositoryImpl implements ExpenseSumaryRepository {
 
-    @Autowired
     private final ExpenseSumaryPgRepository expenseSumaryPgRepository;
 
     @Override
-    public Optional<ExpenseSummary> create(ExpenseSummary data) {
+    public Mono<ExpenseSummary> create(ExpenseSummary data) {
         ExpenseSummaryEntity e = ExpenseSummaryMapper.fromDomainToEntity(data);
-        e = expenseSumaryPgRepository.save(e);
-        return Optional.of(ExpenseSummaryMapper.fromEntityToDomain(e));
+        return expenseSumaryPgRepository.save(e).map(ExpenseSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public Optional<ExpenseSummary> update(ExpenseSummary data) {
+    public Mono<ExpenseSummary> update(ExpenseSummary data) {
         ExpenseSummaryEntity e = ExpenseSummaryMapper.fromDomainToEntity(data);
-        e = expenseSumaryPgRepository.save(e);
-        return Optional.of(ExpenseSummaryMapper.fromEntityToDomain(e));
+        return  expenseSumaryPgRepository.save(e).map(ExpenseSummaryMapper::fromEntityToDomain);
+
     }
 
     @Override
-    public Optional<ExpenseSummary> getById(long id) {
-        Optional<ExpenseSummaryEntity> e = expenseSumaryPgRepository.findById(id);
-        return Optional.of(e.map(ExpenseSummaryMapper::fromEntityToDomain).get());
+    public Mono<ExpenseSummary> getById(long id) {
+
+        return expenseSumaryPgRepository.findById(id).map(ExpenseSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public List<ExpenseSummary> all() {
-        List<ExpenseSummary> list = expenseSumaryPgRepository.findAll().stream().map(ExpenseSummaryMapper::fromEntityToDomain).toList();
-        return list;
+    public Flux<ExpenseSummary> all() {
+        return expenseSumaryPgRepository.findAll().map(ExpenseSummaryMapper::fromEntityToDomain);
     }
 
     @Override
@@ -52,18 +51,17 @@ public class ExpenseSumaryRepositoryImpl implements ExpenseSumaryRepository {
     }
 
     @Override
-    public List<ExpenseSummary> getByRangeDate(LocalDate start_date, LocalDate end_date) {
-        List<ExpenseSummary> entityList = expenseSumaryPgRepository
-                                                .findByRangeDate(start_date,end_date)
-                                                .stream().map(ExpenseSummaryMapper::fromEntityToDomain)
-                                                .toList();
+    public Flux<ExpenseSummary> getByRangeDate(LocalDate start_date, LocalDate end_date) {
 
 
-        return entityList;
+
+        return expenseSumaryPgRepository
+                .findByRangeDate(start_date,end_date)
+                .map(ExpenseSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public Optional<ExpenseSummary> getLast() {
+    public Mono<ExpenseSummary> getLast() {
         return  expenseSumaryPgRepository.getLast()
                 .map(ExpenseSummaryMapper::fromEntityToDomain);
 

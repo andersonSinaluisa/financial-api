@@ -1,23 +1,21 @@
 package com.andersonsinaluisa.financial_api.core.application.create;
 
 import com.andersonsinaluisa.financial_api.core.application.calculate.AccountCalculateCurrentBalance;
-import com.andersonsinaluisa.financial_api.core.application.find.AccountFindUseCase;
-import com.andersonsinaluisa.financial_api.core.application.update.AccountUpdateUseCase;
 import com.andersonsinaluisa.financial_api.core.domain.exception.InvalidDataTransaction;
 import com.andersonsinaluisa.financial_api.core.domain.exception.InvalidDateTransaction;
 import com.andersonsinaluisa.financial_api.core.domain.exception.TypeTransactionNotAllow;
 import com.andersonsinaluisa.financial_api.core.domain.model.*;
+import com.andersonsinaluisa.financial_api.core.domain.objectValues.TypeTransaction;
 import com.andersonsinaluisa.financial_api.core.domain.repository.IncomeSumaryRepository;
 import com.andersonsinaluisa.financial_api.core.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,42 +36,65 @@ public class TransactionCreateUseCase {
     private AccountCalculateCurrentBalance accountCalculateCurrentBalance;
 
 
-    public Transaction create(Transaction data) throws Exception {
-        List<TypeTransaction> avaliable = Arrays.stream(TypeTransaction.values()).toList();
-        if(avaliable.stream().noneMatch(e->e.getValue().equals(data.transaction_type))){
-            throw new TypeTransactionNotAllow("Tipo de transación no valida");
+    public Mono<Transaction> create(Transaction data) {
+        // Validación del tipo de transacción
+        if (!TypeTransaction.isValidType(data.transaction_type)) {
+            return Mono.error(new TypeTransactionNotAllow("Tipo de transacción no válida"));
         }
-        if(data.transaction_type == TypeTransaction.TRANSFERENCIA.getValue()){
-            if(data.destination_account==null||data.source_account==null){
-                throw new InvalidDataTransaction("Verifique la cuenta de destino y la cuenta de origen");
+
+        // Validación si es tipo TRANSFERENCIA
+        if (data.transaction_type.equals(TypeTransaction.TRANSFERENCIA.getValue())) {
+            if (data.destination_account == null || data.source_account == null) {
+                return Mono.error(new InvalidDataTransaction("Verifique la cuenta de destino y la cuenta de origen"));
             }
         }
+
+        // Validación de la fecha
         LocalDateTime now = LocalDateTime.now();
-        if(data.transaction_date.isAfter(now)){
-            throw  new InvalidDateTransaction("La fecha de la transacción no debe ser mayor a la fecha actual");
+        if (data.transaction_date.isAfter(now)) {
+            return Mono.error(new InvalidDateTransaction("La fecha de la transacción no debe ser mayor a la fecha actual"));
         }
 
+        // Generar el identificador único
         data.identifier = UUID.randomUUID();
-        Transaction t =  this.transactionRepository.create(data).orElseThrow();
 
-        accountCalculateCurrentBalance.calculateFromTransaction(t);
+        // Crear la transacción
+        return transactionRepository.create(data)
+                .flatMap(t -> {
+                    // Calcular el balance actual y las sumas de ingresos y gastos
+                    return Mono.zip(
+                            accountCalculateCurrentBalance.calculateFromTransaction(t),
+                            incomeSumaryCreateUseCase.calculateTotalIncome(t),
+                            expenseSumaryCreateUseCase.calculateTotalExpense(t)
+                    ).flatMap(tuple -> {
+                        // Crear las sumas de ingresos y gastos
+                        Double totalIncome = tuple.getT2();
+                        Double totalExpense = tuple.getT3();
 
-        double total_income = incomeSumaryCreateUseCase.calculateTotalIncome(t);
-        double total_expense = expenseSumaryCreateUseCase.calculateTotaExpense(t);
+                        // Crear los objetos IncomeSumary y ExpenseSummary
+                        IncomeSumary income = IncomeSumary.builder()
+                                .total_income(totalIncome)
+                                .start_date(LocalDate.now())
+                                .end_date(LocalDate.now())
+                                .created_at(LocalDateTime.now())
+                                .report_date(LocalDateTime.now())
+                                .build();
 
-        incomeSumaryCreateUseCase.create(IncomeSumary.builder().total_income(total_income)
-                .start_date(LocalDate.now())
-                .end_date(LocalDate.now())
-                        .created_at(LocalDateTime.now())
-                .report_date(LocalDateTime.now()).build());
-        expenseSumaryCreateUseCase.create(ExpenseSummary.builder()
-                        .total_expense(total_expense)
-                        .category(t.category)
-                        .created_at(LocalDateTime.now())
-                        .start_date(LocalDate.now())
-                        .created_at(LocalDateTime.now())
-                        .end_date(LocalDate.now())
-                .build());
-        return t;
+                        ExpenseSummary expense = ExpenseSummary.builder()
+                                .total_expense(totalExpense)
+                                .category(t.category)
+                                .start_date(LocalDate.now())
+                                .end_date(LocalDate.now())
+                                .created_at(LocalDateTime.now())
+                                .build();
+
+                        // Crear las sumas de ingresos y gastos en la base de datos
+                        return Mono.zip(
+                                incomeSumaryCreateUseCase.create(income),
+                                expenseSumaryCreateUseCase.create(expense)
+                        ).thenReturn(t); // Devolver la transacción creada
+                    });
+                });
     }
+
 }

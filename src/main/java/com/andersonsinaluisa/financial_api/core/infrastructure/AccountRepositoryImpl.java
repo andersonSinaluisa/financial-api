@@ -8,80 +8,105 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Repository
+@Service
 @RequiredArgsConstructor
 public class AccountRepositoryImpl implements AccountRepository {
 
-    @Autowired
     private final AccountPgRepository accountPgRepository;
 
-
     @Override
-    public Optional<Account> create(Account data) {
+    public Mono<Optional<Account>> create(Account data) {
 
         AccountEntity accountEntity = AccountMapper.fromDtoToDomain(data);
 
-        accountEntity = this.accountPgRepository.save(accountEntity);
-        return Optional.of(AccountMapper.fromDomainToDto(accountEntity));
+
+        return this.accountPgRepository.save(accountEntity).map(
+                saved -> Optional.of(AccountMapper.fromDomainToDto(saved))
+        );
     }
 
+
     @Override
-    public Optional<Account> update(Account data) {
+    public Mono<Optional<Account>> update(Account data) {
         AccountEntity accountEntity = AccountMapper.fromDtoToDomain(data);
-        accountEntity = this.accountPgRepository.save(accountEntity);
-        return Optional.of(AccountMapper.fromDomainToDto(accountEntity));
+
+        return this.accountPgRepository.save(accountEntity).map(
+                saved -> Optional.of(AccountMapper.fromDomainToDto(saved))
+        );
     }
 
     @Override
-    public Optional<Account> getById(long id) {
-        Optional<AccountEntity> accountEntity = this.accountPgRepository.findById(id);
-        if(accountEntity.isPresent()){
-            AccountEntity accountEntity1 = accountEntity.get();
-            return Optional.of(AccountMapper.fromDomainToDto(accountEntity1));
+    public Mono<Optional<Account>> getById(long id) {
 
-        }
-        return Optional.empty();
+        return this.accountPgRepository.findById(id).map(
+          saved ->  Optional.of(AccountMapper.fromDomainToDto(saved))
+        );
+    }
+
+    public Mono<Page<Account>> all(Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int offset = (int) pageable.getOffset();
+
+        Mono<List<Account>> content = accountPgRepository
+                .findAllByLimitAndOffset(pageSize, offset)
+                .map(AccountMapper::fromDomainToDto)
+                .collectList();
+
+        Mono<Long> count = accountPgRepository.count();
+
+        return Mono.zip(content, count)
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+    }
+
+
+    @Override
+    public Mono<Page<Account>> all(String search,Pageable pageable){
+        long limit = pageable.getPageSize();
+        long offset = pageable.getOffset();
+
+        Mono<List<Account>> content = accountPgRepository.findBySearchWithPagination(search, limit, offset)
+                .map(AccountMapper::fromDomainToDto)
+                .collectList();
+
+        Mono<Long> count = accountPgRepository.countBySearch(search);
+
+        return Mono.zip(content, count)
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+
+
     }
 
     @Override
-    public Page<Account> all(Pageable pageable) {
-
-        Page<AccountEntity> objectStream = accountPgRepository.findAll(pageable);
-        return objectStream.map(AccountMapper::fromDomainToDto);
+    public Flux<Account> all() {
+        return accountPgRepository.findAll().map(AccountMapper::fromDomainToDto);
     }
 
     @Override
-    public Page<Account> all(String search,Pageable pageable){
-        Page<AccountEntity> objectStream = accountPgRepository.findBySearch(search,pageable);
-        return objectStream.map(AccountMapper::fromDomainToDto);
+    public Mono<Void> deleteById(long id) {
+        return this.accountPgRepository.findById(id)
+                .flatMap(account -> {
+                    account.setDeleted(true);
+                    return accountPgRepository.save(account);
+                })
+                .then();
     }
 
     @Override
-    public List<Account> all() {
-        return accountPgRepository.findAll().stream().map(AccountMapper::fromDomainToDto).toList();
-    }
-
-    @Override
-    public void deleteById(long id) {
-
-        Optional<AccountEntity> account = this.accountPgRepository.findById(id);
-        if(account.isPresent()){
-            AccountEntity data = account.get();
-            data.deleted = true;
-            accountPgRepository.save(data);
-        }
-    }
-
-    @Override
-    public Optional<Account> getBySlug(String slug) {
-        return this.accountPgRepository.findBySlug(slug).map(AccountMapper::fromDomainToDto);
+    public Mono<Account> getBySlug(String slug) {
+        return this.accountPgRepository.findBySlug(slug)
+                .map(AccountMapper::fromDomainToDto);
     }
 
 

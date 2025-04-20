@@ -8,6 +8,8 @@ import com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,47 +19,43 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class IncomeSumaryRepositoryImpl implements IncomeSumaryRepository {
 
-    @Autowired
     private final IncomeSumaryPgRepository incomeSumaryPgRepository;
 
     @Override
-    public Optional<IncomeSumary> create(IncomeSumary data) {
+    public Mono<IncomeSumary> create(IncomeSumary data) {
 
         IncomeSumaryEntity entity = IncomeSummaryMapper.fromDomainToEntity(data);
-        entity = incomeSumaryPgRepository.save(entity);
-        return Optional.of(IncomeSummaryMapper.fromEntityToDomain(entity));
+        return incomeSumaryPgRepository.save(entity).map(IncomeSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public Optional<IncomeSumary> update(IncomeSumary data) {
+    public Mono<IncomeSumary> update(IncomeSumary data) {
         IncomeSumaryEntity entity = IncomeSummaryMapper.fromDomainToEntity(data);
-        entity = incomeSumaryPgRepository.save(entity);
-        return Optional.of(IncomeSummaryMapper.fromEntityToDomain(entity));
+        return incomeSumaryPgRepository.save(entity).map(IncomeSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public Optional<IncomeSumary> getById(long id) {
+    public Mono<IncomeSumary> getById(long id) {
         return incomeSumaryPgRepository.findById(id).map(IncomeSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public List<IncomeSumary> all() {
-        List<IncomeSumary> list = incomeSumaryPgRepository.findAll().stream().map(IncomeSummaryMapper::fromEntityToDomain).toList();
-        return list;
+    public Flux<IncomeSumary> all() {
+        return  incomeSumaryPgRepository.findAll().map(IncomeSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public void deleteById(long id) {
-        incomeSumaryPgRepository.deleteById(id);
+    public Mono<Void> deleteById(long id) {
+        return incomeSumaryPgRepository.deleteById(id);
     }
 
     @Override
-    public List<IncomeSumary> getByRangeDate(LocalDate start_date, LocalDate end_date) {
-        return List.of();
+    public Flux<IncomeSumary> getByRangeDate(LocalDate start_date, LocalDate end_date) {
+        return incomeSumaryPgRepository.findByRangeDate(start_date,end_date).map(IncomeSummaryMapper::fromEntityToDomain);
     }
 
     @Override
-    public Optional<IncomeSumary> getLast() {
+    public Mono<IncomeSumary> getLast() {
         return incomeSumaryPgRepository.getLast()
                 .map(IncomeSummaryMapper::fromEntityToDomain);
     }

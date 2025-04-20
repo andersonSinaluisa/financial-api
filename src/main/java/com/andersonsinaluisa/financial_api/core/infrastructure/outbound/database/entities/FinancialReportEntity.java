@@ -1,12 +1,12 @@
 package com.andersonsinaluisa.financial_api.core.infrastructure.outbound.database.entities;
 
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Table(name="financial_report")
 @Builder
 @Getter
@@ -15,9 +15,8 @@ import java.time.LocalDateTime;
 @Setter
 public class FinancialReportEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
-    public String report_type;
-    public LocalDateTime generated_at;
+    public String reportType;
+    public LocalDateTime generatedAt;
     public String comments;
 }

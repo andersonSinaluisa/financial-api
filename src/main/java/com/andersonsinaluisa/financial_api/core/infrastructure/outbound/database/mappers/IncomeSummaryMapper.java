@@ -8,24 +8,24 @@ public class IncomeSummaryMapper {
     public static IncomeSumaryEntity fromDomainToEntity(IncomeSumary data){
         return IncomeSumaryEntity.builder()
                 .id(data.id)
-                .total_income(data.total_income)
+                .totalIncome(data.total_income)
                 .category(data.category)
-                .report_date(data.report_date)
-                .created_at(data.created_at)
-                .end_date(data.end_date)
-                .start_date(data.start_date)
+                .reportDate(data.report_date)
+                .createdAt(data.created_at)
+                .endDate(data.end_date)
+                .startDate(data.start_date)
                 .build();
     }
 
     public static IncomeSumary fromEntityToDomain(IncomeSumaryEntity data){
         return IncomeSumary.builder()
-                .created_at(data.created_at)
-                .report_date(data.report_date)
+                .created_at(data.createdAt)
+                .report_date(data.reportDate)
                 .category(data.category)
-                .total_income(data.total_income)
+                .total_income(data.totalIncome)
                 .id(data.id)
-                .end_date(data.end_date)
-                .start_date(data.start_date)
+                .end_date(data.endDate)
+                .start_date(data.startDate)
                 .build();
     }
 }
